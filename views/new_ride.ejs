@@ -7,5 +7,28 @@
     <body>
         <h1>New Ride</h1>
         <p>Welcome to rides.</p>
+
+        <button id="ride">Ride</button>
+        <script>
+            document
+                .getElementById('ride')
+                .addEventListener('click', async () => {
+                    try {
+                        const response = await fetch('/rides', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                // Add any other headers if needed
+                            },
+                            // Add any request body data if needed
+                            // body: JSON.stringify({ key: 'value' }),
+                        });
+                        const data = await response.json();
+                        console.log('Response:', data);
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+        </script>
     </body>
 </html>
