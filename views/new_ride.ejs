@@ -7,7 +7,7 @@
         <script
             async
             defer
-            src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+            src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&callback=initMap"
         ></script>
     </head>
     <body>
@@ -17,26 +17,5 @@
         <div id="map" style="height: 600px"></div>
 
         <button id="ride">Ride</button>
-        <script>
-            document
-                .getElementById('ride')
-                .addEventListener('click', async () => {
-                    try {
-                        const response = await fetch('/rides', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                // Add any other headers if needed
-                            },
-                            // Add any request body data if needed
-                            // body: JSON.stringify({ key: 'value' }),
-                        });
-                        const data = await response.json();
-                        console.log('Response:', data);
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-                });
-        </script>
     </body>
 </html>

@@ -5,7 +5,7 @@ const { Client } = require('@googlemaps/google-maps-services-js');
 
 // Display new ride page.
 exports.new_ride = asyncHandler(async (req, res, next) => {
-    res.render('new_ride');
+    res.render('new_ride', { key: config.directionsAPI });
 });
 
 // API call for new ride.
