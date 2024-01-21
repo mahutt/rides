@@ -61,13 +61,13 @@ function initMap() {
                 const midpointvectorLng = (endLng + startLng) / 2;
 
                 var waypoint1Lat =
-                    midpointvectorLat + 0.2 * (endLat - startLat);
+                    midpointvectorLat + 0.1 * (endLat - startLat);
                 var waypoint1Lng =
-                    midpointvectorLng - 0.2 * (endLng - startLng);
+                    midpointvectorLng - 0.1 * (endLng - startLng);
                 var waypoint2Lat =
-                    midpointvectorLat - 0.2 * (endLat - startLat);
+                    midpointvectorLat - 0.1 * (endLat - startLat);
                 var waypoint2Lng =
-                    midpointvectorLng + 0.2 * (endLng - startLng);
+                    midpointvectorLng + 0.1 * (endLng - startLng);
 
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
@@ -134,22 +134,22 @@ function initMap() {
                             legses.push(bareLegs);
                             if (results.length === 3) {
                                 console.log(legses);
-                                document
-                                    .querySelectorAll('.route')
-                                    .forEach(function (button) {
-                                        button.addEventListener(
-                                            'click',
-                                            (event) => {
-                                                directionsRenderer.setDirections(
-                                                    results[
-                                                        parseInt(
-                                                            event.target.id
-                                                        )
-                                                    ]
-                                                );
-                                            }
-                                        );
-                                    });
+                                // document
+                                //     .querySelectorAll('.route')
+                                //     .forEach(function (button) {
+                                //         button.addEventListener(
+                                //             'click',
+                                //             (event) => {
+                                //                 directionsRenderer.setDirections(
+                                //                     results[
+                                //                         parseInt(
+                                //                             event.target.id
+                                //                         )
+                                //                     ]
+                                //                 );
+                                //             }
+                                //         );
+                                //     });
                                 fetch('/rides', {
                                     method: 'POST',
                                     headers: {
@@ -166,6 +166,42 @@ function initMap() {
                                     )
                                     .then((data) => {
                                         console.log('Success:', data);
+                                        const rankings = data.rankings;
+                                        console.log(rankings);
+                                        document
+                                            .querySelector('#safest')
+                                            .addEventListener(
+                                                'click',
+                                                (event) => {
+                                                    directionsRenderer.setDirections(
+                                                        results[
+                                                            parseInt(
+                                                                rankings[
+                                                                    'safest'
+                                                                ]
+                                                            )
+                                                        ]
+                                                    );
+                                                }
+                                            );
+
+                                        document
+                                            .querySelector('#least-traffic')
+                                            .addEventListener(
+                                                'click',
+                                                (event) => {
+                                                    directionsRenderer.setDirections(
+                                                        results[
+                                                            parseInt(
+                                                                rankings[
+                                                                    'leastTraffic'
+                                                                ]
+                                                            )
+                                                        ]
+                                                    );
+                                                }
+                                            );
+
                                         // @here for using response
                                     })
                                     .catch((error) =>
@@ -180,8 +216,8 @@ function initMap() {
 
                 // var results = [];
                 drawRoute(start, null, end, null);
-                drawRoute(start, waypoints[0], end, safestElement);
-                drawRoute(start, waypoints[1], end, leastTrafficElement);
+                drawRoute(start, waypoints[0], end, 'safest');
+                drawRoute(start, waypoints[1], end, 'least-traffic');
 
                 //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
