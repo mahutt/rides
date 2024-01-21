@@ -32,6 +32,15 @@ function initMap() {
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
+        // const waypoint1Lat = midpointLat + c1Lat;
+        // const waypoint1Lng = midpointLat + c1Lng;
+
+        // const waypoint2Lat = midpointLat + c2Lat;
+        // const waypoint2Lng = midpointLat + c2Lng;
+
+        // const waypoint1 = {lat: waypoint1Lat, lng: waypoint1Lng };
+        // const waypoint2 = {lat: waypoint2Lat, lng: waypoint2Lng };
+
         geocodeAddress(start, (startLocation) => {
             geocodeAddress(end, (endLocation) => {
                 const startLat = startLocation.lat;
@@ -49,28 +58,37 @@ function initMap() {
                 const c1Lng = midpointLng + midpointvectorLng;
                 const c2Lat = midpointLat + midpointvectorLat;
                 const c2Lng = midpointLng - midpointvectorLng;
+                
+                // document.getElementById('waypoint1').value;
 
-                directionsService.route(
-                    {
-                        origin: start,
-                        destination: end,
-                        travelMode: 'DRIVING',
-                    },
-                    (response, status) => {
-                        if (status === 'OK') {
-                            directionsRenderer.setDirections(response);
-                        } else {
-                            console.log('Error: ', status);
-                        }
-                    }
-                );
+                
+            directionsService.route(
+                {
+                origin: start,
+                destination: end,
+                travelMode: 'DRIVING',
+                },
+                (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    console.log('Error: ', status);
+                  }
+                }
+            );
             });
         });
-
-        function drawRoute(start, end) {
+        
+        function drawRoute(start, end, waypoints) {
             var request = {
                 origin: start,
                 destination: end,
+                waypoints: waypoints.map(waypoints => {
+                    return {
+                        location: waypoint1,
+                        stopover: true
+                    };
+                }),
                 travelMode: 'BICYCLING',
             };
 
@@ -84,12 +102,6 @@ function initMap() {
             });
         }
 
-        //get coordinates from input using geocoder for node express
-
-        // var start = document.getElementById('start').value;
-        // var end = document.getElementById('end').value;
-        // var start = '1535 rue St Jacques, Montreal, Canada';  // from textbox
-        // var end = '2125 rue Crescent, Montreal, Canada';  // from textbox
         drawRoute(start, end);
     });
 
