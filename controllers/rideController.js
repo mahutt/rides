@@ -56,7 +56,7 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         const dataArray = [];
         db.serialize(() => {
             db.serialize(() => {
-                db.all(`SELECT * FROM collisions LIMIT 1`, (err, rows) => {
+                db.all(`SELECT * FROM collisions`, (err, rows) => {
                    if (err) {
                      console.error(err.message);
                    }
