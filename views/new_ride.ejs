@@ -13,7 +13,6 @@
     </head>
     <body>
         <h1>New Ride</h1>
-        <p>Welcome to rides.</p>
         <div id="container">
             <div id="map"></div>
             <div id="input">
@@ -23,8 +22,7 @@
                     id="start"
                     name="start"
                     placeholder="Starting point"
-                /><br />
-                <br />
+                />
 
                 <label for="end"></label>
                 <input
@@ -32,15 +30,19 @@
                     id="end"
                     name="end"
                     placeholder="Destination"
-                /><br /><br />
-                <label for="filters">Filter 1: </label>
+                />
+                <div class="routes">
+                    <div id="fastest" class="route">Fastest</div>
+                    <div id="safest" class="route">Safest</div>
+                    <div id="least-traffic" class="route">Least Traffic</div>
+                </div>
+                <!-- <label for="filters">Filter 1: </label>
                 <select id="filters" name="filters">
                     <option value="" selected disabled>Choose</option>
                     <option value="quickest">Quickest</option>
                     <option value="safest">Safest</option>
                     <option value="least-traffic">Least traffic</option>
                 </select>
-                <br /><br />
 
                 <label for="filters">Filter 2: </label>
                 <select id="filters" name="filters">
@@ -49,7 +51,6 @@
                     <option value="safest">Safest</option>
                     <option value="least-traffic">Least traffic</option>
                 </select>
-                <br /><br />
 
                 <label for="filters">Filter 3: </label>
                 <select id="filters" name="filters">
@@ -57,8 +58,8 @@
                     <option value="quickest">Quickest</option>
                     <option value="safest">Safest</option>
                     <option value="least-traffic">Least traffic</option>
-                </select>
-                <br /><br />
+                </select> -->
+
                 <button id="ride">Ride</button>
             </div>
         </div>
