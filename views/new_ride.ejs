@@ -10,12 +10,11 @@
             defer
             src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&callback=initMap"
         ></script> -->
-        <script 
+        <script
             async
             defer
-            src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&loading=async&libraries=visualization&callback=initMap">
-        </script> 
-
+            src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&loading=async&libraries=visualization&callback=initMap"
+        ></script>
     </head>
     <body>
         <h1>New Ride</h1>
@@ -39,22 +38,16 @@
                     placeholder="Destination"
                     value="McGill University"
                 />
-                <!-- <div class="routes">
                 <div class="routes">
-                    <!-- <div class="loader"></div> -->
-                    <!-- <div id="fastest" class="route">Fastest</div>
+                    <div id="fastest" class="route">Fastest</div>
                     <div id="safest" class="route">Safest</div>
                     <div id="least-traffic" class="route">Least Traffic</div>
-                </div> -->
-                <div class="routes">
+                </div>
+                <!-- <div class="routes">
                     <div id="0" class="route">0</div>
                     <div id="1" class="route">1</div>
                     <div id="2" class="route">2</div>
-                    <!-- <div id="3" class="route">3</div>
-                    <div id="4" class="route">4</div>
-                    <div id="5" class="route">5</div> -->
-
-                </div>
+                </div> -->
 
                 <!-- <label for="filters">Filter 1: </label>
                 <select id="filters" name="filters">
@@ -80,7 +73,16 @@
                     <option value="least-traffic">Least traffic</option>
                 </select> -->
 
-                <button id="ride" onclick="simulateLoading()">Ride</button>
+                <div class="button-wrapper">
+                    <!-- <div class="loader"></div> -->
+                    <button
+                        id="ride"
+                        onclick="simulateLoading()"
+                        style="width: 100%"
+                    >
+                        Ride
+                    </button>
+                </div>
             </div>
         </div>
     </body>
