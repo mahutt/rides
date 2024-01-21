@@ -5,7 +5,7 @@ function simulateLoading() {
     var originalContent = button.innerHTML;
 
     // Set the button content to the loading icon
-    button.innerHTML = '<div class="loader" style="text-align: center"></div>';
+    button.innerHTML = '<div class="loader"></div>';
 
     // Simulate an asynchronous operation (e.g., an API call) with setTimeout
     setTimeout(function () {
