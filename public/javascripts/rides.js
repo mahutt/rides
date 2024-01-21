@@ -36,11 +36,7 @@ function initMap() {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
                     const latLng = { lat: location.lat(), lng: location.lng() };
-                    callback({
-                        address,
-                        lat: location.lat(),
-                        lng: location.lng(),
-                    });
+                    callback({ address, lat: location.lat(), lng: location.lng() });
                 } else {
                     console.log('error');
                 }
@@ -56,32 +52,91 @@ function initMap() {
                 const startLng = startLocation.lng;
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
+                
 
-                const midpointvectorLat = (endLat - startLat) / 2;
-                const midpointvectorLng = (endLng - startLng) / 2;
+                const midpointvectorLat = (endLat + startLat)/2;
+                const midpointvectorLng = (endLng + startLng)/2;
+                
 
-                const midpointLat = startLat + midpointvectorLat;
-                const midpointLng = startLng + midpointvectorLng;
+                // const midpointLat = (startLat + midpointvectorLat);
+                // const midpointLng = (startLng + midpointvectorLng);
+                // console.log(midpointLat);
+                // console.log(midpointLng);
 
-                const c1Lat = midpointLat - midpointvectorLat;
-                const c1Lng = midpointLng + midpointvectorLng;
-                const c2Lat = midpointLat + midpointvectorLat;
-                const c2Lng = midpointLng - midpointvectorLng;
+                // var waypoint1Lat = (midpointvectorLat + 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
 
-                directionsService.route(
-                    {
+                // document.getElementById('waypoint1').value;
+                var waypoint1Lat = midpointvectorLat + (endLat - startLat);
+                var waypoint1Lng = midpointvectorLng - (endLng - startLng);
+                var waypoint2Lat = midpointvectorLat - (endLat - startLat);
+                var waypoint2Lng = midpointvectorLng + (endLng - startLng);
+
+                // var waypoint1Lat = (midpointvectorLat + (midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
+
+
+                console.log(waypoint1Lat);
+                console.log(waypoint1Lng);
+                console.log(waypoint1Lat);
+                console.log(waypoint1Lng);
+
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng};
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng};
+
+                var safestElement = document.getElementById('safest');
+                var leastTrafficElement = document.getElementById('least-traffic');
+
+                var waypoints = [
+                    { location: waypoint1, stopover: true }, 
+                    { location: waypoint2, stopover: true }
+                ];
+
+                var routeses = [];
+                function drawRoute(start, waypoint, end, button) {
+                    var request = {
                         origin: start,
                         destination: end,
-                        travelMode: 'DRIVING',
-                    },
-                    (response, status) => {
+                        travelMode: 'BICYCLING',
+                    };
+
+                    if (waypoint) [
+                        request.waypoints = [waypoint],
+                    ]
+        
+                    directionsService.route(request, function (result, status) {
                         if (status === 'OK') {
-                            directionsRenderer.setDirections(response);
+                            // console.log(result);
+                            console.log(result.routes);
+                            routeses.push(result.routes);
+                            if (routeses.length === 3) {
+                                fetch('/rides', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(routeses),
+                                  })
+                                    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
+                                    .then(data => console.log('Success:', data))
+                                    .catch(error => console.error('Error:', error));
+                            }
                         } else {
                             console.log('Error: ', status);
                         }
-                    }
-                );
+                    });
+                }
+
+                var results = [];
+                drawRoute(start, null, end, null);
+                drawRoute(start, waypoints[0], end, safestElement);
+                drawRoute(start, waypoints[1], end, leastTrafficElement);
+                
+
+                // 
+                // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
 
@@ -95,7 +150,6 @@ function initMap() {
             directionsService.route(request, function (result, status) {
                 if (status == 'OK') {
                     routes.push(result);
-                    // stop loader
                     directionsRenderer.setDirections(result);
                 } else {
                     console.log('Error: ', status);
