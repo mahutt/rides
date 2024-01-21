@@ -166,34 +166,42 @@ function initMap() {
                                     )
                                     .then((data) => {
                                         console.log('Success:', data);
-                                        const rankings = data;
+                                        const rankings = data.rankings;
                                         console.log(rankings);
-                                        document.querySelector("#safest").addEventListener(
-                                            'click',
-                                            (event) => {
-                                                directionsRenderer.setDirections(
-                                                    results[
-                                                        parseInt(
-                                                           rankings["safest"]
-                                                        
-                                                        )
-                                                    ]
-                                                );
-                                            })
-                                            
-                                        document.querySelector("#least-traffic").addEventListener(
-                                            'click',
-                                            (event) => {
-                                                directionsRenderer.setDirections(
-                                                    results[
-                                                        parseInt(
-                                                           rankings["leastTraffic"]
-                                                            
-                                                        )
-                                                    ]
-                                                );
-                                            })
-                                                     
+                                        document
+                                            .querySelector('#safest')
+                                            .addEventListener(
+                                                'click',
+                                                (event) => {
+                                                    directionsRenderer.setDirections(
+                                                        results[
+                                                            parseInt(
+                                                                rankings[
+                                                                    'safest'
+                                                                ]
+                                                            )
+                                                        ]
+                                                    );
+                                                }
+                                            );
+
+                                        document
+                                            .querySelector('#least-traffic')
+                                            .addEventListener(
+                                                'click',
+                                                (event) => {
+                                                    directionsRenderer.setDirections(
+                                                        results[
+                                                            parseInt(
+                                                                rankings[
+                                                                    'leastTraffic'
+                                                                ]
+                                                            )
+                                                        ]
+                                                    );
+                                                }
+                                            );
+
                                         // @here for using response
                                     })
                                     .catch((error) =>
@@ -208,8 +216,8 @@ function initMap() {
 
                 // var results = [];
                 drawRoute(start, null, end, null);
-                drawRoute(start, waypoints[0], end, "safest");
-                drawRoute(start, waypoints[1], end, "least-traffic");
+                drawRoute(start, waypoints[0], end, 'safest');
+                drawRoute(start, waypoints[1], end, 'least-traffic');
 
                 //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
