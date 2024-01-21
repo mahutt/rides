@@ -1,4 +1,5 @@
 function initMap() {
+    var routes = [];
     var location = { lat: 45.5019, lng: -73.5674 };
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
@@ -20,6 +21,7 @@ function initMap() {
 
             directionsService.route(request, function (result, status) {
                 if (status == 'OK') {
+                    routes.push(result);
                     directionsRenderer.setDirections(result);
                 } else {
                     console.log('Error: ', status);
