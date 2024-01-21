@@ -12,17 +12,14 @@ function initMap() {
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
-        function geocodeAddress(address, callback) {
+        
+    function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
                     const latLng = { lat: location.lat(), lng: location.lng() };
-                    callback({
-                        address,
-                        lat: location.lat(),
-                        lng: location.lng(),
-                    });
+                    callback({ address, lat: location.lat(), lng: location.lng() });
                 } else {
                     console.log('error');
                 }
@@ -32,36 +29,75 @@ function initMap() {
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
-        // const waypoint1Lat = midpointLat + c1Lat;
-        // const waypoint1Lng = midpointLat + c1Lng;
-
-        // const waypoint2Lat = midpointLat + c2Lat;
-        // const waypoint2Lng = midpointLat + c2Lng;
-
-        // const waypoint1 = {lat: waypoint1Lat, lng: waypoint1Lng };
-        // const waypoint2 = {lat: waypoint2Lat, lng: waypoint2Lng };
-
         geocodeAddress(start, (startLocation) => {
             geocodeAddress(end, (endLocation) => {
                 const startLat = startLocation.lat;
                 const startLng = startLocation.lng;
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
-
-                const midpointvectorLat = (endLat - startLat) / 2;
-                const midpointvectorLng = (endLng - startLng) / 2;
-
-                const midpointLat = startLat + midpointvectorLat;
-                const midpointLng = startLng + midpointvectorLng;
-
-                const c1Lat = midpointLat - midpointvectorLat;
-                const c1Lng = midpointLng + midpointvectorLng;
-                const c2Lat = midpointLat + midpointvectorLat;
-                const c2Lng = midpointLng - midpointvectorLng;
                 
+
+                const midpointvectorLat = (endLat + startLat)/2;
+                const midpointvectorLng = (endLng + startLng)/2;
+                
+
+                // const midpointLat = (startLat + midpointvectorLat);
+                // const midpointLng = (startLng + midpointvectorLng);
+                // console.log(midpointLat);
+                // console.log(midpointLng);
+
+                // var waypoint1Lat = (midpointvectorLat + 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
+
                 // document.getElementById('waypoint1').value;
+                var waypoint1Lat = midpointvectorLat + (endLat - startLat);
+                var waypoint1Lng = midpointvectorLng - (endLng - startLng);
+                var waypoint2Lat = midpointvectorLat - (endLat - startLat);
+                var waypoint2Lng = midpointvectorLng + (endLng - startLng);
 
+                // var waypoint1Lat = (midpointvectorLat + (midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
+
+
+                console.log(waypoint1Lat);
+                console.log(waypoint1Lng);
+                console.log(waypoint1Lat);
+                console.log(waypoint1Lng);
+
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng};
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng};
+
+                var waypoints = [
+                    { location: waypoint1, stopover: true }, 
+                    { location: waypoint2, stopover: true }
+                ];
+
+                function drawRoute(start, end) {
+                    var request = {
+                        origin: start,
+                        destination: end,
+                        travelMode: 'BICYCLING',
+                        waypoints: waypoints,
+                    };
+        
+                    directionsService.route(request, function (result, status) {
+                        if (status === 'OK') {
+                            console.log(result);
+                            routes.push(result);
+                            directionsRenderer.setDirections(result);
+                        } else {
+                            console.log('Error: ', status);
+                        }
+                    });
+                }
+        
+                drawRoute(start, end);
                 
+
             directionsService.route(
                 {
                 origin: start,
@@ -79,41 +115,5 @@ function initMap() {
             });
         });
         
-        function drawRoute(start, end, waypoints) {
-            var request = {
-                origin: start,
-                destination: end,
-                waypoints: waypoints.map(waypoints => {
-                    return {
-                        location: waypoint1,
-                        stopover: true
-                    };
-                }),
-                travelMode: 'BICYCLING',
-            };
-
-            directionsService.route(request, function (result, status) {
-                if (status == 'OK') {
-                    routes.push(result);
-                    directionsRenderer.setDirections(result);
-                } else {
-                    console.log('Error: ', status);
-                }
-            });
-        }
-
-        drawRoute(start, end);
-    });
-
-    const routeButtons = document.querySelectorAll('.route');
-    var active = null;
-    routeButtons.forEach(function (button) {
-        button.addEventListener('click', function (click) {
-            if (active) {
-                active.classList.remove('active');
-            }
-            click.target.classList.add('active');
-            active = click.target;
-        });
     });
 }
