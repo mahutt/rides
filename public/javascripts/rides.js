@@ -71,47 +71,48 @@ function initMap() {
                 var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng};
                 var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng};
 
+                var safestElement = document.getElementById('safest');
+                var leastTrafficElement = document.getElementById('least-traffic');
+
                 var waypoints = [
                     { location: waypoint1, stopover: true }, 
                     { location: waypoint2, stopover: true }
                 ];
 
-                function drawRoute(start, end) {
+                var routeses = [];
+                function drawRoute(start, waypoint, end, button) {
                     var request = {
                         origin: start,
                         destination: end,
                         travelMode: 'BICYCLING',
-                        waypoints: waypoints,
                     };
+
+                    if (waypoint) [
+                        request.waypoints = [waypoint],
+                    ]
         
                     directionsService.route(request, function (result, status) {
                         if (status === 'OK') {
-                            console.log(result);
-                            routes.push(result);
-                            directionsRenderer.setDirections(result);
+                            // console.log(result);
+                            console.log(result.routes);
+                            routeses.push(result.routes);
+                            if (routeses.length === 3) {
+
+                            }
                         } else {
                             console.log('Error: ', status);
                         }
                     });
                 }
-        
-                drawRoute(start, end);
+
+                var results = [];
+                drawRoute(start, null, end, null);
+                drawRoute(start, waypoints[0], end, safestElement);
+                drawRoute(start, waypoints[1], end, leastTrafficElement);
                 
 
-            directionsService.route(
-                {
-                origin: start,
-                destination: end,
-                travelMode: 'DRIVING',
-                },
-                (response, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                } else {
-                    console.log('Error: ', status);
-                  }
-                }
-            );
+                // 
+                // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
         
