@@ -25,11 +25,10 @@ function initMap() {
     var directionsRenderer = new google.maps.DirectionsRenderer();
     var directionsService = new google.maps.DirectionsService();
 
+    // Creates initial map
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
-        // start
-
         function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
@@ -47,6 +46,7 @@ function initMap() {
             });
         }
 
+        // Gets location values from user input
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
@@ -86,6 +86,25 @@ function initMap() {
                     { location: waypoint2, stopover: true },
                 ];
 
+                // Heat map points added
+                const heatmapData = [
+                    {
+                        lat: midpointvectorLat,
+                        lng: midpointvectorLng,
+                        intensity: 3,
+                    },
+
+                    // { lat: waypoint1.lat, lng: waypoint1.lng, intensity: 3 },
+                    // { lat: waypoint2.lat, lng: waypoint2.lng, intensity: 3 },
+                ];
+
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData.map(function (point) {
+                        return new google.maps.LatLng(point.lat, point.lng);
+                    }),
+                    map: map,
+                });
+
                 var results = [];
                 var legses = [];
                 function drawRoute(start, waypoint, end, button) {
@@ -93,6 +112,7 @@ function initMap() {
                         origin: start,
                         destination: end,
                         travelMode: 'BICYCLING',
+                        optimizeWaypoints: true,
                     };
 
                     if (waypoint) {
@@ -157,7 +177,7 @@ function initMap() {
                     });
                 }
 
-                var results = [];
+                // var results = [];
                 drawRoute(start, null, end, null);
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
