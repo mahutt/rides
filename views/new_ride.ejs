@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+    <%- include('./partials/head', {title: 'ob | dashboard'}); %>
     <head>
         <title>New Ride</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
@@ -16,13 +17,48 @@
         <div id="container">
             <div id="map"></div>
             <div id="input">
-                <label for="start">From:</label>
-                <input type="text" id="start" name="start"/>
-                <br>
+                <label for="start"></label>
+                <input
+                    type="text"
+                    id="start"
+                    name="start"
+                    placeholder="Starting point"
+                /><br />
+                <br />
 
-                <label for="end">To:</label>
-                <input type="text" id="end" name="end"/>
-                <br>
+                <label for="end"></label>
+                <input
+                    type="text"
+                    id="end"
+                    name="end"
+                    placeholder="Destination"
+                /><br /><br />
+                <label for="filters">Filter 1: </label>
+                <select id="filters" name="filters">
+                    <option value="" selected disabled>Choose</option>
+                    <option value="quickest">Quickest</option>
+                    <option value="safest">Safest</option>
+                    <option value="least-traffic">Least traffic</option>
+                </select>
+                <br /><br />
+
+                <label for="filters">Filter 2: </label>
+                <select id="filters" name="filters">
+                    <option value="" selected disabled>Choose</option>
+                    <option value="quickest">Quickest</option>
+                    <option value="safest">Safest</option>
+                    <option value="least-traffic">Least traffic</option>
+                </select>
+                <br /><br />
+
+                <label for="filters">Filter 3: </label>
+                <select id="filters" name="filters">
+                    <option value="" selected disabled>Choose</option>
+                    <option value="quickest">Quickest</option>
+                    <option value="safest">Safest</option>
+                    <option value="least-traffic">Least traffic</option>
+                </select>
+                <br /><br />
                 <button id="ride">Ride</button>
             </div>
         </div>
