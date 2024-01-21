@@ -1,3 +1,19 @@
+function simulateLoading() {
+    var button = document.getElementById('ride');
+
+    // Store the original content of the button
+    var originalContent = button.innerHTML;
+
+    // Set the button content to the loading icon
+    button.innerHTML = '<div class="loader" style="text-align: center"></div>';
+
+    // Simulate an asynchronous operation (e.g., an API call) with setTimeout
+    setTimeout(function () {
+        // Restore the original content after the operation is complete
+        button.innerHTML = originalContent;
+    }, 2000); // Adjust the time based on your scenario
+}
+
 function initMap() {
     var routes = [];
     var location = { lat: 45.5019, lng: -73.5674 };
@@ -12,6 +28,8 @@ function initMap() {
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
+        // start
+
         function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
@@ -77,6 +95,7 @@ function initMap() {
             directionsService.route(request, function (result, status) {
                 if (status == 'OK') {
                     routes.push(result);
+                    // stop loader
                     directionsRenderer.setDirections(result);
                 } else {
                     console.log('Error: ', status);

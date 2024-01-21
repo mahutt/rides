@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <%- include('./partials/head', {title: 'ob | dashboard'}); %>
+    <%- include('./partials/head', {title: 'Rides | dashboard'}); %>
     <head>
         <title>New Ride</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
@@ -16,7 +16,7 @@
         <div id="container">
             <div id="map"></div>
             <div id="input">
-                <label for="start"></label>
+                <label for="start" style="text-align: center"></label>
                 <input
                     type="text"
                     id="start"
@@ -32,10 +32,12 @@
                     placeholder="Destination"
                 />
                 <div class="routes">
+                    <!-- <div class="loader"></div> -->
                     <div id="fastest" class="route">Fastest</div>
                     <div id="safest" class="route">Safest</div>
                     <div id="least-traffic" class="route">Least Traffic</div>
                 </div>
+
                 <!-- <label for="filters">Filter 1: </label>
                 <select id="filters" name="filters">
                     <option value="" selected disabled>Choose</option>
@@ -60,7 +62,7 @@
                     <option value="least-traffic">Least traffic</option>
                 </select> -->
 
-                <button id="ride">Ride</button>
+                <button id="ride" onclick="simulateLoading()">Ride</button>
             </div>
         </div>
     </body>
