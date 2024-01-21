@@ -164,9 +164,10 @@ function initMap() {
                                                   `HTTP error! Status: ${response.status}`
                                               )
                                     )
-                                    .then((data) =>
-                                        console.log('Success:', data)
-                                    )
+                                    .then((data) => {
+                                        console.log('Success:', data);
+                                        // @here for using response
+                                    })
                                     .catch((error) =>
                                         console.error('Error:', error)
                                     );

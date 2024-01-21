@@ -168,7 +168,7 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
             safest: safestRouteIndex,
             leastTraffic: clearestRoadsIndex,
         };
-        res.json(rankings);
+        res.json({ rankings: rankings });
     } catch (error) {
         console.log(error);
     }
