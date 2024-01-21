@@ -21,14 +21,15 @@ function initMap() {
         zoom: 12,
         center: location,
     });
-
+      
     var directionsRenderer = new google.maps.DirectionsRenderer();
     var directionsService = new google.maps.DirectionsService();
 
+    // Creates initial map
     directionsRenderer.setMap(map);
 
+
     document.getElementById('ride').addEventListener('click', async () => {
-        // start
 
         function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
@@ -43,6 +44,7 @@ function initMap() {
             });
         }
 
+        // Gets location values from user input
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
@@ -57,10 +59,10 @@ function initMap() {
                 const midpointvectorLat = (endLat + startLat)/2;
                 const midpointvectorLng = (endLng + startLng)/2;
                 
-                var waypoint1Lat = (midpointvectorLat + 0.2*(endLat - startLat));
-                var waypoint1Lng = (midpointvectorLng - 0.2*(endLng - startLng));
-                var waypoint2Lat = (midpointvectorLat - 0.2*(endLat - startLat));
-                var waypoint2Lng = (midpointvectorLng + 0.2*(endLng - startLng));
+                var waypoint1Lat = (midpointvectorLat + 0.1*(endLat - startLat));
+                var waypoint1Lng = (midpointvectorLng - 0.1*(endLng - startLng));
+                var waypoint2Lat = (midpointvectorLat - 0.1*(endLat - startLat));
+                var waypoint2Lng = (midpointvectorLng + 0.1*(endLng - startLng));
 
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
@@ -78,6 +80,22 @@ function initMap() {
                     { location: waypoint2, stopover: true },
                 ];
 
+
+                // Heat map points added
+                const heatmapData = [
+                    { lat: midpointvectorLat, lng: midpointvectorLng, intensity: 3 },
+
+                    // { lat: waypoint1.lat, lng: waypoint1.lng, intensity: 3 },
+                    // { lat: waypoint2.lat, lng: waypoint2.lng, intensity: 3 },
+                ]
+
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData.map(function (point) {
+                        return new google.maps.LatLng(point.lat, point.lng);
+                    }),
+                    map: map
+                });
+
                 var results = [];
                 var routeses = [];
                 function drawRoute(start, waypoint, end, button) {
@@ -85,6 +103,7 @@ function initMap() {
                         origin: start,
                         destination: end,
                         travelMode: 'BICYCLING',
+                        optimizeWaypoints: true,
                     };
 
                     if (waypoint) {
@@ -97,6 +116,7 @@ function initMap() {
                             routeses.push(result.routes)
                             if (results.length === 3) {
                                 console.log(results);
+
                                 document.querySelectorAll('.route').forEach(function(button) {
                                     button.addEventListener('click', (event) => {
                                         directionsRenderer.setDirections(results[parseInt(event.target.id)])
@@ -117,11 +137,14 @@ function initMap() {
                     });
                 }
 
-                var results = [];
+                // var results = [];
                 drawRoute(start, null, end, null);
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
-                
+                drawRoute(start, waypoints[2], end, safestElement);
+                // drawRoute(start, waypoints[3], end, leastTrafficElement);
+                // drawRoute(start, waypoints[4], end, leastTrafficElement);
+
 
                 // 
                 // { fastest: 1, safest: 2, least-traffic: 0 }
@@ -144,13 +167,6 @@ function initMap() {
                 }
             });
         }
-
-        //get coordinates from input using geocoder for node express
-
-        // var start = document.getElementById('start').value;
-        // var end = document.getElementById('end').value;
-        // var start = '1535 rue St Jacques, Montreal, Canada';  // from textbox
-        // var end = '2125 rue Crescent, Montreal, Canada';  // from textbox
         drawRoute(start, end);
     });
 
@@ -166,3 +182,5 @@ function initMap() {
         });
     });
 }
+
+
