@@ -5,13 +5,13 @@ function simulateLoading() {
     var originalContent = button.innerHTML;
 
     // Set the button content to the loading icon
-    button.innerHTML = '<div class="loader" style="text-align: center"></div>';
+    button.innerHTML = '<div class="loader"></div>';
 
     // Simulate an asynchronous operation (e.g., an API call) with setTimeout
     setTimeout(function () {
         // Restore the original content after the operation is complete
         button.innerHTML = originalContent;
-    }, 2000); // Adjust the time based on your scenario
+    }, 1000); // Adjust the time based on your scenario
 }
 
 function initMap() {
@@ -40,6 +40,11 @@ function initMap() {
                         lat: location.lat(),
                         lng: location.lng(),
                     });
+                    callback({
+                        address,
+                        lat: location.lat(),
+                        lng: location.lng(),
+                    });
                 } else {
                     console.log('error');
                 }
@@ -60,6 +65,30 @@ function initMap() {
                 const midpointvectorLat = (endLat + startLat) / 2;
                 const midpointvectorLng = (endLng + startLng) / 2;
 
+                // const midpointLat = (startLat + midpointvectorLat);
+                // const midpointLng = (startLng + midpointvectorLng);
+                // console.log(midpointLat);
+                // console.log(midpointLng);
+
+                // var waypoint1Lat = (midpointvectorLat + 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
+
+                // document.getElementById('waypoint1').value;
+                var waypoint1Lat = midpointvectorLat + (endLat - startLat);
+                var waypoint1Lng = midpointvectorLng - (endLng - startLng);
+                var waypoint2Lat = midpointvectorLat - (endLat - startLat);
+                var waypoint2Lng = midpointvectorLng + (endLng - startLng);
+
+                // var waypoint1Lat = (midpointvectorLat + (midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng - 0.2*(midpointvectorLng));
+                // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
+                // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
+
+                const midpointvectorLat = (endLat + startLat) / 2;
+                const midpointvectorLng = (endLng + startLng) / 2;
+
                 var waypoint1Lat =
                     midpointvectorLat + 0.2 * (endLat - startLat);
                 var waypoint1Lng =
@@ -76,8 +105,12 @@ function initMap() {
 
                 var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
                 var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
 
                 var safestElement = document.getElementById('safest');
+                var leastTrafficElement =
+                    document.getElementById('least-traffic');
                 var leastTrafficElement =
                     document.getElementById('least-traffic');
 
@@ -183,6 +216,7 @@ function initMap() {
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
 
+                //
                 //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
             });
