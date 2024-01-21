@@ -133,7 +133,7 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
                 Math.abs(longB - tripleTuple[1]) < 0.0001
             ) {
                 a = [longA, longB, heatMapIntensity]
-                heatMapArr.push(a);
+                // heatMapArr.push(a);
                 return tripleTuple[2];
             }
         }
@@ -196,7 +196,7 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
             safest: safestRouteIndex,
             leastTraffic: clearestRoadsIndex,
         };
-        res.json(rankings);
+        res.json({ rankings: rankings, collisionHeat: heatMapArr });
 
         console.log(heatMapArr)
 
