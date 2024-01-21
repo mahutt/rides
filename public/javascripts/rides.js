@@ -97,7 +97,14 @@ function initMap() {
                             console.log(result.routes);
                             routeses.push(result.routes);
                             if (routeses.length === 3) {
-
+                                fetch('/rides', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(routeses),
+                                  })
+                                    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
+                                    .then(data => console.log('Success:', data))
+                                    .catch(error => console.error('Error:', error));
                             }
                         } else {
                             console.log('Error: ', status);
@@ -118,12 +125,3 @@ function initMap() {
         
     });
 }
-
-fetch('/rides', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    // body: JSON.stringify(postData),
-  })
-    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
-    .then(data => console.log('Success:', data))
-    .catch(error => console.error('Error:', error));
