@@ -36,7 +36,11 @@ function initMap() {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
                     const latLng = { lat: location.lat(), lng: location.lng() };
-                    callback({ address, lat: location.lat(), lng: location.lng() });
+                    callback({
+                        address,
+                        lat: location.lat(),
+                        lng: location.lng(),
+                    });
                 } else {
                     console.log('error');
                 }
@@ -52,34 +56,38 @@ function initMap() {
                 const startLng = startLocation.lng;
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
-                
 
-                const midpointvectorLat = (endLat + startLat)/2;
-                const midpointvectorLng = (endLng + startLng)/2;
-                
-                var waypoint1Lat = (midpointvectorLat + 0.2*(endLat - startLat));
-                var waypoint1Lng = (midpointvectorLng - 0.2*(endLng - startLng));
-                var waypoint2Lat = (midpointvectorLat - 0.2*(endLat - startLat));
-                var waypoint2Lng = (midpointvectorLng + 0.2*(endLng - startLng));
+                const midpointvectorLat = (endLat + startLat) / 2;
+                const midpointvectorLng = (endLng + startLng) / 2;
+
+                var waypoint1Lat =
+                    midpointvectorLat + 0.2 * (endLat - startLat);
+                var waypoint1Lng =
+                    midpointvectorLng - 0.2 * (endLng - startLng);
+                var waypoint2Lat =
+                    midpointvectorLat - 0.2 * (endLat - startLat);
+                var waypoint2Lng =
+                    midpointvectorLng + 0.2 * (endLng - startLng);
 
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
 
-                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng};
-                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng};
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
 
                 var safestElement = document.getElementById('safest');
-                var leastTrafficElement = document.getElementById('least-traffic');
+                var leastTrafficElement =
+                    document.getElementById('least-traffic');
 
                 var waypoints = [
-                    { location: waypoint1, stopover: true }, 
+                    { location: waypoint1, stopover: true },
                     { location: waypoint2, stopover: true },
                 ];
 
                 var results = [];
-                var routeses = [];
+                var legses = [];
                 function drawRoute(start, waypoint, end, button) {
                     var request = {
                         origin: start,
@@ -90,26 +98,58 @@ function initMap() {
                     if (waypoint) {
                         request.waypoints = [waypoint];
                     }
-        
+
                     directionsService.route(request, function (result, status) {
                         if (status === 'OK') {
                             results.push(result);
-                            routeses.push(result.routes)
+                            let bareLegs = [];
+                            for (leg of result.routes[0].legs) {
+                                const bareLeg = { steps: [] };
+                                for (step of leg.steps) {
+                                    const points = step.polyline.points;
+                                    bareLeg.steps.push(points);
+                                }
+                                bareLegs.push(bareLeg);
+                            }
+                            legses.push(bareLegs);
                             if (results.length === 3) {
-                                console.log(results);
-                                document.querySelectorAll('.route').forEach(function(button) {
-                                    button.addEventListener('click', (event) => {
-                                        directionsRenderer.setDirections(results[parseInt(event.target.id)])
+                                console.log(legses);
+                                document
+                                    .querySelectorAll('.route')
+                                    .forEach(function (button) {
+                                        button.addEventListener(
+                                            'click',
+                                            (event) => {
+                                                directionsRenderer.setDirections(
+                                                    results[
+                                                        parseInt(
+                                                            event.target.id
+                                                        )
+                                                    ]
+                                                );
+                                            }
+                                        );
                                     });
-                                });
                                 fetch('/rides', {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(routeses),
-                                  })
-                                    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
-                                    .then(data => console.log('Success:', data))
-                                    .catch(error => console.error('Error:', error));
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(legses),
+                                })
+                                    .then((response) =>
+                                        response.ok
+                                            ? response.json()
+                                            : Promise.reject(
+                                                  `HTTP error! Status: ${response.status}`
+                                              )
+                                    )
+                                    .then((data) =>
+                                        console.log('Success:', data)
+                                    )
+                                    .catch((error) =>
+                                        console.error('Error:', error)
+                                    );
                             }
                         } else {
                             console.log('Error: ', status);
@@ -121,37 +161,11 @@ function initMap() {
                 drawRoute(start, null, end, null);
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
-                
 
-                // 
+                //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
-
-        function drawRoute(start, end) {
-            var request = {
-                origin: start,
-                destination: end,
-                travelMode: 'BICYCLING',
-            };
-
-            directionsService.route(request, function (result, status) {
-                if (status == 'OK') {
-                    routes.push(result);
-                    directionsRenderer.setDirections(result);
-                } else {
-                    console.log('Error: ', status);
-                }
-            });
-        }
-
-        //get coordinates from input using geocoder for node express
-
-        // var start = document.getElementById('start').value;
-        // var end = document.getElementById('end').value;
-        // var start = '1535 rue St Jacques, Montreal, Canada';  // from textbox
-        // var end = '2125 rue Crescent, Montreal, Canada';  // from textbox
-        drawRoute(start, end);
     });
 
     const routeButtons = document.querySelectorAll('.route');
