@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-    <%- include('./partials/head', {title: 'Rides | dashboard'}); %>
+    <%- include('./partials/head', {title: 'Rides'}); %>
     <head>
-        <title>New Ride</title>
+        <title>Rides</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
         <script src="/javascripts/rides.js"></script>
         <script
@@ -12,11 +12,18 @@
         ></script>
     </head>
     <body>
-        <h1>New Ride</h1>
+        <div id="menu">
+            <!-- <div><img id="logo" src="/image/logo.png" alt="Bicycle" /></div> -->
+            <div id="name">
+                <h1>Rides</h1>
+            </div>
+            <div></div>
+        </div>
+
         <div id="container">
             <div id="map"></div>
             <div id="input">
-                <label for="start" style="text-align: center"></label>
+                <label for="start"></label>
                 <input
                     type="text"
                     id="start"

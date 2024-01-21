@@ -5,13 +5,13 @@ function simulateLoading() {
     var originalContent = button.innerHTML;
 
     // Set the button content to the loading icon
-    button.innerHTML = '<div class="loader" style="text-align: center"></div>';
+    button.innerHTML = '<div class="loader"></div>';
 
     // Simulate an asynchronous operation (e.g., an API call) with setTimeout
     setTimeout(function () {
         // Restore the original content after the operation is complete
         button.innerHTML = originalContent;
-    }, 2000); // Adjust the time based on your scenario
+    }, 1000); // Adjust the time based on your scenario
 }
 
 function initMap() {
@@ -36,7 +36,11 @@ function initMap() {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
                     const latLng = { lat: location.lat(), lng: location.lng() };
-                    callback({ address, lat: location.lat(), lng: location.lng() });
+                    callback({
+                        address,
+                        lat: location.lat(),
+                        lng: location.lng(),
+                    });
                 } else {
                     console.log('error');
                 }
@@ -52,11 +56,9 @@ function initMap() {
                 const startLng = startLocation.lng;
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
-                
 
-                const midpointvectorLat = (endLat + startLat)/2;
-                const midpointvectorLng = (endLng + startLng)/2;
-                
+                const midpointvectorLat = (endLat + startLat) / 2;
+                const midpointvectorLng = (endLng + startLng) / 2;
 
                 // const midpointLat = (startLat + midpointvectorLat);
                 // const midpointLng = (startLng + midpointvectorLng);
@@ -79,21 +81,21 @@ function initMap() {
                 // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
                 // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
 
-
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
 
-                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng};
-                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng};
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
 
                 var safestElement = document.getElementById('safest');
-                var leastTrafficElement = document.getElementById('least-traffic');
+                var leastTrafficElement =
+                    document.getElementById('least-traffic');
 
                 var waypoints = [
-                    { location: waypoint1, stopover: true }, 
-                    { location: waypoint2, stopover: true }
+                    { location: waypoint1, stopover: true },
+                    { location: waypoint2, stopover: true },
                 ];
 
                 var routeses = [];
@@ -104,10 +106,8 @@ function initMap() {
                         travelMode: 'BICYCLING',
                     };
 
-                    if (waypoint) [
-                        request.waypoints = [waypoint],
-                    ]
-        
+                    if (waypoint) [(request.waypoints = [waypoint])];
+
                     directionsService.route(request, function (result, status) {
                         if (status === 'OK') {
                             // console.log(result);
@@ -116,12 +116,24 @@ function initMap() {
                             if (routeses.length === 3) {
                                 fetch('/rides', {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
                                     body: JSON.stringify(routeses),
-                                  })
-                                    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
-                                    .then(data => console.log('Success:', data))
-                                    .catch(error => console.error('Error:', error));
+                                })
+                                    .then((response) =>
+                                        response.ok
+                                            ? response.json()
+                                            : Promise.reject(
+                                                  `HTTP error! Status: ${response.status}`
+                                              )
+                                    )
+                                    .then((data) =>
+                                        console.log('Success:', data)
+                                    )
+                                    .catch((error) =>
+                                        console.error('Error:', error)
+                                    );
                             }
                         } else {
                             console.log('Error: ', status);
@@ -133,9 +145,8 @@ function initMap() {
                 drawRoute(start, null, end, null);
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
-                
 
-                // 
+                //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
