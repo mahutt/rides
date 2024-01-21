@@ -3,6 +3,12 @@
     <head>
         <title>New Ride</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
+        <script src="/javascripts/rides.js"></script>
+        <script
+            async
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&callback=initMap"
+        ></script>
     </head>
     <body>
         <h1>New Ride</h1>
@@ -17,5 +23,9 @@
                 <input type="text" id="start" name="start" />
             </div>
         </div>
+
+        <div id="map" style="height: 600px"></div>
+
+        <button id="ride">Ride</button>
     </body>
 </html>
