@@ -22,17 +22,13 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         return minIndex;
     }
 
-    function apiToArr(folderName) {
+    function apiToArr(routeses) {
         const allCoordinatesArr = [];
-        const files = fs.readdirSync(folderName);
 
-        for (const routeFile of files) {
+        for (const routes of routeses) {
             const coordinatesArray = [];
-            const data = JSON.parse(
-                fs.readFileSync(`${folderName}/${routeFile}`, 'utf8')
-            );
 
-            for (const route of data.routes) {
+            for (const route of routes) {
                 for (const leg of route.legs) {
                     for (const step of leg.steps) {
                         const polylineLine = step.polyline.points;
@@ -149,7 +145,7 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
 
     try {
         console.log('1');
-        const allRouteDataArr = apiToArr('routes_txt_folder');
+        const allRouteDataArr = apiToArr(req.body);
         console.log('2');
         const collisionCsvFileName = 'collisions.csv';
         const trafficCsvFileName = 'traffic.csv';
@@ -159,13 +155,11 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         const clearestRoadsIndex = findClearestRoadsRoute(allRouteDataArr, trafficDataArr)
         console.log(safestRouteIndex);
         console.log(clearestRoadsIndex);
-
+        rankings = { safest: safestRouteIndex, leastTraffic: clearestRoadsIndex };
+        res.json(rankings);
 
 
     } catch (error) {
         console.log(error);
     }
-
-    res.json({ message: 'Hello, World!' });
-    // send respone back to client...
 });
