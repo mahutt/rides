@@ -10,16 +10,10 @@ var ridesRouter = require('./routes/rides');
 
 var app = express();
 
-// mongoose connection setup
-const mongoose = require('mongoose');
-const config = require('./config.js');
-mongoose.set('strictQuery', false);
-const mongoDB = config.mongoDB;
-
-main().catch((err) => console.log(err));
-async function main() {
-    await mongoose.connect(mongoDB);
-}
+// sqlite connection setup
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
