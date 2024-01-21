@@ -32,49 +32,22 @@ function initMap() {
 
         geocodeAddress(start, (startLocation) => {
             geocodeAddress(end, (endLocation) => {
-                // const start = startLocation.latLng;
-                // const end = endLocation.latLng;
-                // console.log(start);
-                // console.log(end);
-
-                // midvector = ((end - start)/2);
-                // console.log(midvector);
-
-                // midpoint = ((start) + midvector);
-                // console.log(midpoint);
-
-                // // extra1 = midpoint + ()
-
                 const startLat = startLocation.lat;
                 const startLng = startLocation.lng;
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
-            
-                console.log('start lat:', startLat);
-                console.log('start lng:', startLng);
-                console.log('end lat:', endLat);
-                console.log('end lng:', endLng);
 
                 const midpointvectorLat = (endLat - startLat)/2;
-                console.log('midpointvectorLat:', midpointvectorLat);
-
                 const midpointvectorLng = (endLng - startLng)/2;
-                console.log('midpointvectorLng:', midpointvectorLng);
 
                 const midpointLat = (startLat + midpointvectorLat);
-                console.log('midpointLat:', midpointLat);
-
                 const midpointLng = (startLng + midpointvectorLng);
-                console.log('midpointLng:', midpointLng);
 
                 const c1Lat = midpointLat - midpointvectorLat;
                 const c1Lng = midpointLng + midpointvectorLng;
                 const c2Lat = midpointLat + midpointvectorLat;
                 const c2Lng = midpointLng - midpointvectorLng;
-                console.log('c1Lat:', c1Lat);
-                console.log('c1Lng:', c1Lng);
-                console.log('c2Lat:', c2Lat);
-                console.log('c2Lng:', c2Lng);
+                
 
             directionsService.route(
                 {
