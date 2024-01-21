@@ -1,3 +1,19 @@
+function simulateLoading() {
+    var button = document.getElementById('ride');
+
+    // Store the original content of the button
+    var originalContent = button.innerHTML;
+
+    // Set the button content to the loading icon
+    button.innerHTML = '<div class="loader" style="text-align: center"></div>';
+
+    // Simulate an asynchronous operation (e.g., an API call) with setTimeout
+    setTimeout(function () {
+        // Restore the original content after the operation is complete
+        button.innerHTML = originalContent;
+    }, 2000); // Adjust the time based on your scenario
+}
+
 function initMap() {
     var routes = [];
     var location = { lat: 45.5019, lng: -73.5674 };
@@ -12,8 +28,9 @@ function initMap() {
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
-        
-    function geocodeAddress(address, callback) {
+        // start
+
+        function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
                 if (status === 'OK') {
@@ -110,6 +127,42 @@ function initMap() {
                 // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
-        
+
+        function drawRoute(start, end) {
+            var request = {
+                origin: start,
+                destination: end,
+                travelMode: 'BICYCLING',
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status == 'OK') {
+                    routes.push(result);
+                    directionsRenderer.setDirections(result);
+                } else {
+                    console.log('Error: ', status);
+                }
+            });
+        }
+
+        //get coordinates from input using geocoder for node express
+
+        // var start = document.getElementById('start').value;
+        // var end = document.getElementById('end').value;
+        // var start = '1535 rue St Jacques, Montreal, Canada';  // from textbox
+        // var end = '2125 rue Crescent, Montreal, Canada';  // from textbox
+        drawRoute(start, end);
+    });
+
+    const routeButtons = document.querySelectorAll('.route');
+    var active = null;
+    routeButtons.forEach(function (button) {
+        button.addEventListener('click', function (click) {
+            if (active) {
+                active.classList.remove('active');
+            }
+            click.target.classList.add('active');
+            active = click.target;
+        });
     });
 }
