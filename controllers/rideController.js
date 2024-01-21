@@ -1,7 +1,6 @@
-const User = require('../models/user');
 const config = require('../config.js');
+const db = require('../database/database.js');
 const asyncHandler = require('express-async-handler');
-const { Client } = require('@googlemaps/google-maps-services-js');
 
 // Display new ride page.
 exports.new_ride = asyncHandler(async (req, res, next) => {
