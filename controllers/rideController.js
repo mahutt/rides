@@ -11,6 +11,11 @@ exports.new_ride = asyncHandler(async (req, res, next) => {
 
 // API call for new ride.
 exports.get_directions = asyncHandler(async (req, res, next) => {
+
+    heatMapArr = []
+    heatMapIntensity = 3
+
+
     function findIndexOfMin(arr) {
         if (!arr.length) {
             return null;
@@ -45,54 +50,70 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
 
     const fs = require('fs');
 
-    console.log('Swag');
 
     function readCollisionsCsvAndCreateArray(csvFile) {
-        const dataArray = [];
-        db.serialize(() => {
+        return new Promise((resolve, reject) => {
+            const dataArray = [];
+    
             db.serialize(() => {
                 db.all(`SELECT * FROM collisions`, (err, rows) => {
                     if (err) {
                         console.error(err.message);
-                    }
-                    rows.forEach((row) => {
-                        dataArray.push([row.LOC_LONG, row.LOC_LAT]);
-                    });
-                });
-            });
-        });
-        return dataArray;
-    }
-
-    function readTrafficCsvAndCreateArray(csvFile) {
-        const dataArray = [];
-        db.serialize(() => {
-            db.serialize(() => {
-                db.all(`SELECT * FROM traffic`, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
+                        reject(err); // Reject the promise with the error
+                        return;
                     }
                     rows.forEach((row) => {
                         dataArray.push([
-                            row.Longitude,
-                            row.Latitude,
-                            row.total,
+                            row.LOC_LAT,
+                            row.LOC_LONG,
                         ]);
                     });
+                    resolve(dataArray); // Resolve the promise with the dataArray
                 });
             });
         });
+    }
+    
+    
+
+    function readTrafficCsvAndCreateArray(csvFile) {
+        const dataArray = [];
+    
+        db.serialize(() => {
+            db.all(`SELECT * FROM traffic`, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                }
+                rows.forEach((row) => {
+                    dataArray.push([
+                        row.Longitude,
+                        row.Latitude,
+                        row.total,
+                    ]);
+                });
+            });
+        });
+    
+        // Return the dataArray (optional)
         return dataArray;
     }
+    
 
     function closeToCollision(coordPair, collisionDataArr) {
         const [longA, longB] = coordPair;
 
         for (const collCoordPair of collisionDataArr) {
+            // console.log("1")
+            console.log(collCoordPair)
+            console.log(longA, longB)
+            console.log("A")
             if (
-                Math.abs(longA - collCoordPair[0]) < 0 ||
+                Math.abs(longA - collCoordPair[0]) < 0.0001 ||
                 Math.abs(longB - collCoordPair[1]) < 0.0001
             ) {
+                console.log("here")
+                a = { lat: longA, lng: longB, intensity: heatMapIntensity }
+                heatMapArr.push(a);                
                 return true;
             }
         }
@@ -104,10 +125,15 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         const [longA, longB] = coordPair;
 
         for (const tripleTuple of trafficDataArray) {
+            // console.log("2")
+
+
             if (
                 Math.abs(longA - tripleTuple[0]) < 0.0001 ||
                 Math.abs(longB - tripleTuple[1]) < 0.0001
             ) {
+                a = [longA, longB, heatMapIntensity]
+                // heatMapArr.push(a);
                 return tripleTuple[2];
             }
         }
@@ -146,14 +172,16 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
     }
 
     try {
-        console.log('1');
         const allRouteDataArr = apiToArr(req.body);
-        console.log('2');
         const collisionCsvFileName = 'collisions.csv';
         const trafficCsvFileName = 'traffic.csv';
         const trafficDataArr = readTrafficCsvAndCreateArray(trafficCsvFileName);
+        
+        console.log(trafficDataArr)
+        
         const collisionDataArr =
-            readCollisionsCsvAndCreateArray(collisionCsvFileName);
+            await readCollisionsCsvAndCreateArray(collisionCsvFileName);
+        console.log(collisionDataArr)
         const safestRouteIndex = findSafestRoute(
             allRouteDataArr,
             collisionDataArr
@@ -168,8 +196,14 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
             safest: safestRouteIndex,
             leastTraffic: clearestRoadsIndex,
         };
-        res.json({ rankings: rankings });
+        res.json({ rankings: rankings, collisionHeat: heatMapArr });
+
+        console.log(heatMapArr)
+
+
     } catch (error) {
         console.log(error);
     }
 });
+
+
