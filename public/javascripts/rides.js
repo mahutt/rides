@@ -33,4 +33,16 @@ function initMap() {
         var end = 'Montreal, Canada';
         drawRoute(start, end);
     });
+
+    const routeButtons = document.querySelectorAll('.route');
+    var active = null;
+    routeButtons.forEach(function (button) {
+        button.addEventListener('click', function (click) {
+            if (active) {
+                active.classList.remove('active');
+            }
+            click.target.classList.add('active');
+            active = click.target;
+        });
+    });
 }
