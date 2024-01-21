@@ -98,12 +98,12 @@ function initMap() {
                     // { lat: waypoint2.lat, lng: waypoint2.lng, intensity: 3 },
                 ];
 
-                var heatmap = new google.maps.visualization.HeatmapLayer({
-                    data: heatmapData.map(function (point) {
-                        return new google.maps.LatLng(point.lat, point.lng);
-                    }),
-                    map: map,
-                });
+                // var heatmap = new google.maps.visualization.HeatmapLayer({
+                //     data: heatmapData.map(function (point) {
+                //         return new google.maps.LatLng(point.lat, point.lng);
+                //     }),
+                //     map: map,
+                // });
 
                 var results = [];
                 var legses = [];
@@ -201,6 +201,14 @@ function initMap() {
                                                     );
                                                 }
                                             );
+                                            
+                                            
+                                            var heatmap = new google.maps.visualization.HeatmapLayer({
+                                                data: data.collisionHeat.map(function (point) {
+                                                    return new google.maps.LatLng(point.lat, point.lng);
+                                                }),
+                                                map: map,
+                                            });
 
                                         // @here for using response
                                     })
