@@ -12,14 +12,17 @@ function initMap() {
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
-        
-    function geocodeAddress(address, callback) {
+        function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
                     const latLng = { lat: location.lat(), lng: location.lng() };
-                    callback({ address, lat: location.lat(), lng: location.lng() });
+                    callback({
+                        address,
+                        lat: location.lat(),
+                        lng: location.lng(),
+                    });
                 } else {
                     console.log('error');
                 }
@@ -29,7 +32,6 @@ function initMap() {
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
-
         geocodeAddress(start, (startLocation) => {
             geocodeAddress(end, (endLocation) => {
                 const startLat = startLocation.lat;
@@ -37,35 +39,34 @@ function initMap() {
                 const endLat = endLocation.lat;
                 const endLng = endLocation.lng;
 
-                const midpointvectorLat = (endLat - startLat)/2;
-                const midpointvectorLng = (endLng - startLng)/2;
+                const midpointvectorLat = (endLat - startLat) / 2;
+                const midpointvectorLng = (endLng - startLng) / 2;
 
-                const midpointLat = (startLat + midpointvectorLat);
-                const midpointLng = (startLng + midpointvectorLng);
+                const midpointLat = startLat + midpointvectorLat;
+                const midpointLng = startLng + midpointvectorLng;
 
                 const c1Lat = midpointLat - midpointvectorLat;
                 const c1Lng = midpointLng + midpointvectorLng;
                 const c2Lat = midpointLat + midpointvectorLat;
                 const c2Lng = midpointLng - midpointvectorLng;
-                
 
-            directionsService.route(
-                {
-                origin: start,
-                destination: end,
-                travelMode: 'DRIVING',
-                },
-                (response, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                } else {
-                    console.log('Error: ', status);
-                  }
-                }
-            );
+                directionsService.route(
+                    {
+                        origin: start,
+                        destination: end,
+                        travelMode: 'DRIVING',
+                    },
+                    (response, status) => {
+                        if (status === 'OK') {
+                            directionsRenderer.setDirections(response);
+                        } else {
+                            console.log('Error: ', status);
+                        }
+                    }
+                );
             });
         });
-        
+
         function drawRoute(start, end) {
             var request = {
                 origin: start,
@@ -82,7 +83,6 @@ function initMap() {
                 }
             });
         }
-
 
         //get coordinates from input using geocoder for node express
 
