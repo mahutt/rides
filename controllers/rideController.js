@@ -152,12 +152,11 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         const allRouteDataArr = apiToArr('routes_txt_folder');
         console.log('2');
         const collisionCsvFileName = 'collisions.csv';
-        const collisionDataArr =
-            readCollisionsCsvAndCreateArray(collisionCsvFileName);
-        const safestRouteIndex = findSafestRoute(
-            allRouteDataArr,
-            collisionDataArr
-        );
+        const trafficCsvFileName = 'traffic.csv';
+        const trafficDataArr = readTrafficCsvAndCreateArray(trafficCsvFileName)
+        const collisionDataArr = readCollisionsCsvAndCreateArray(collisionCsvFileName);
+        const safestRouteIndex = findSafestRoute(allRouteDataArr,collisionDataArr);
+        const clearestRoadsIndex = findClearestRoadsRoute(allRouteDataArr, trafficDataArr)
         console.log(safestRouteIndex);
         console.log(clearestRoadsIndex);
 
