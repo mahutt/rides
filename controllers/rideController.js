@@ -68,6 +68,23 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         });
         return dataArray;
     }
+
+    function readTrafficCsvAndCreateArray(csvFile) {
+        const dataArray = [];
+        db.serialize(() => {
+            db.serialize(() => {
+                db.all(`SELECT * FROM traffic`, (err, rows) => {
+                   if (err) {
+                     console.error(err.message);
+                   }
+                   rows.forEach((row) => {
+                    dataArray.push([ row.Longitude, row.Latitude, row.total ]);
+                   })
+                });
+               });
+        });
+        return dataArray;
+    }
     
     
     
@@ -81,6 +98,32 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         }
     
         return false;
+    }
+
+    function trafficAdjustment(coordPair, trafficDataArray) {
+        const [longA, longB] = coordPair;
+    
+        for (const tripleTuple of trafficDataArray) {
+            if (Math.abs(longA - tripleTuple[0]) < 0.0001 || Math.abs(longB - tripleTuple[1]) < 0.0001) {
+                return tripleTuple[2];
+            }
+        }
+    
+        return 0;
+    }
+
+    function findClearestRoadsRoute(allRouteDataArray, trafficDataArray) {
+        const trafficScoreArray = [];
+    
+        for (let i = 0; i < allRouteDataArray.length; i++) {
+            let trafficScore = 0;
+            for (const coordPair of allRouteDataArray[i]) {
+                trafficScore += trafficAdjustment(coordPair, trafficDataArray);
+            }
+            trafficScoreArray.push(trafficScore);
+        }
+    
+        return findIndexOfMin(trafficScoreArray);
     }
     
     function findSafestRoute(allRouteDataArr, collisionDataArr) {
@@ -100,13 +143,19 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
     }
     
     try {
-        console.log("1")
         const allRouteDataArr = apiToArr('routes_txt_folder');
-        console.log("2")
         const collisionCsvFileName = 'collisions.csv';
         const collisionDataArr = readCollisionsCsvAndCreateArray(collisionCsvFileName);
         const safestRouteIndex = findSafestRoute(allRouteDataArr, collisionDataArr);
+        const trafficCsvFileName = "final_traffic.csv";
+        const trafficDataArray = readTrafficCsvAndCreateArray(trafficCsvFileName);
+        const clearestRoadsIndex = findClearestRoadsRoute(allRouteDataArr, trafficDataArray);
+
         console.log(safestRouteIndex);
+        console.log(clearestRoadsIndex);
+
+
+
     } catch (error) {
         console.log(error);
     }

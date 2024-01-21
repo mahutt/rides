@@ -117,3 +117,12 @@ function initMap() {
         });
     });
 }
+
+fetch('/rides', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // body: JSON.stringify(postData),
+  })
+    .then(response => (response.ok ? response.json() : Promise.reject(`HTTP error! Status: ${response.status}`)))
+    .then(data => console.log('Success:', data))
+    .catch(error => console.error('Error:', error));
