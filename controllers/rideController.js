@@ -22,25 +22,18 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         return minIndex;
     }
 
-    function apiToArr(folderName) {
+    function apiToArr(routes) {
         const allCoordinatesArr = [];
-        const files = fs.readdirSync(folderName);
 
-        for (const routeFile of files) {
+        for (const route of routes) {
             const coordinatesArray = [];
-            const data = JSON.parse(
-                fs.readFileSync(`${folderName}/${routeFile}`, 'utf8')
-            );
 
-            for (const route of data.routes) {
-                for (const leg of route.legs) {
-                    for (const step of leg.steps) {
-                        const polylineLine = step.polyline.points;
-                        const decodedCoordinates =
-                            polyline.decode(polylineLine);
-                        for (const [lat, lng] of decodedCoordinates) {
-                            coordinatesArray.push([lat, lng]);
-                        }
+            for (const leg of route) {
+                for (const polylineLine of leg.steps) {
+                    // const polylineLine = step.polyline.points;
+                    const decodedCoordinates = polyline.decode(polylineLine);
+                    for (const [lat, lng] of decodedCoordinates) {
+                        coordinatesArray.push([lat, lng]);
                     }
                 }
             }
@@ -76,20 +69,22 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
         db.serialize(() => {
             db.serialize(() => {
                 db.all(`SELECT * FROM traffic`, (err, rows) => {
-                   if (err) {
-                     console.error(err.message);
-                   }
-                   rows.forEach((row) => {
-                    dataArray.push([ row.Longitude, row.Latitude, row.total ]);
-                   })
+                    if (err) {
+                        console.error(err.message);
+                    }
+                    rows.forEach((row) => {
+                        dataArray.push([
+                            row.Longitude,
+                            row.Latitude,
+                            row.total,
+                        ]);
+                    });
                 });
-               });
+            });
         });
         return dataArray;
     }
-    
-    
-    
+
     function closeToCollision(coordPair, collisionDataArr) {
         const [longA, longB] = coordPair;
 
@@ -107,19 +102,22 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
 
     function trafficAdjustment(coordPair, trafficDataArray) {
         const [longA, longB] = coordPair;
-    
+
         for (const tripleTuple of trafficDataArray) {
-            if (Math.abs(longA - tripleTuple[0]) < 0.0001 || Math.abs(longB - tripleTuple[1]) < 0.0001) {
+            if (
+                Math.abs(longA - tripleTuple[0]) < 0.0001 ||
+                Math.abs(longB - tripleTuple[1]) < 0.0001
+            ) {
                 return tripleTuple[2];
             }
         }
-    
+
         return 0;
     }
 
     function findClearestRoadsRoute(allRouteDataArray, trafficDataArray) {
         const trafficScoreArray = [];
-    
+
         for (let i = 0; i < allRouteDataArray.length; i++) {
             let trafficScore = 0;
             for (const coordPair of allRouteDataArray[i]) {
@@ -127,10 +125,10 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
             }
             trafficScoreArray.push(trafficScore);
         }
-    
+
         return findIndexOfMin(trafficScoreArray);
     }
-    
+
     function findSafestRoute(allRouteDataArr, collisionDataArr) {
         const collisionScoreArr = [];
 
@@ -149,23 +147,29 @@ exports.get_directions = asyncHandler(async (req, res, next) => {
 
     try {
         console.log('1');
-        const allRouteDataArr = apiToArr('routes_txt_folder');
+        const allRouteDataArr = apiToArr(req.body);
         console.log('2');
         const collisionCsvFileName = 'collisions.csv';
         const trafficCsvFileName = 'traffic.csv';
-        const trafficDataArr = readTrafficCsvAndCreateArray(trafficCsvFileName)
-        const collisionDataArr = readCollisionsCsvAndCreateArray(collisionCsvFileName);
-        const safestRouteIndex = findSafestRoute(allRouteDataArr,collisionDataArr);
-        const clearestRoadsIndex = findClearestRoadsRoute(allRouteDataArr, trafficDataArr)
+        const trafficDataArr = readTrafficCsvAndCreateArray(trafficCsvFileName);
+        const collisionDataArr =
+            readCollisionsCsvAndCreateArray(collisionCsvFileName);
+        const safestRouteIndex = findSafestRoute(
+            allRouteDataArr,
+            collisionDataArr
+        );
+        const clearestRoadsIndex = findClearestRoadsRoute(
+            allRouteDataArr,
+            trafficDataArr
+        );
         console.log(safestRouteIndex);
         console.log(clearestRoadsIndex);
-
-
-
+        rankings = {
+            safest: safestRouteIndex,
+            leastTraffic: clearestRoadsIndex,
+        };
+        res.json(rankings);
     } catch (error) {
         console.log(error);
     }
-
-    res.json({ message: 'Hello, World!' });
-    // send respone back to client...
 });

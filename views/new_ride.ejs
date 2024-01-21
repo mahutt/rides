@@ -5,11 +5,17 @@
         <title>Rides</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
         <script src="/javascripts/rides.js"></script>
-        <script
+        <!-- <script
             async
             defer
             src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&callback=initMap"
-        ></script>
+        ></script> -->
+        <script 
+            async
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&loading=async&libraries=visualization&callback=initMap">
+        </script> 
+
     </head>
     <body>
         <div id="menu">
@@ -29,6 +35,7 @@
                     id="start"
                     name="start"
                     placeholder="Starting point"
+                    value="Concordia University"
                 />
 
                 <label for="end"></label>
@@ -37,12 +44,23 @@
                     id="end"
                     name="end"
                     placeholder="Destination"
+                    value="McGill University"
                 />
+                <!-- <div class="routes">
                 <div class="routes">
                     <!-- <div class="loader"></div> -->
-                    <div id="fastest" class="route">Fastest</div>
+                    <!-- <div id="fastest" class="route">Fastest</div>
                     <div id="safest" class="route">Safest</div>
                     <div id="least-traffic" class="route">Least Traffic</div>
+                </div> -->
+                <div class="routes">
+                    <div id="0" class="route">0</div>
+                    <div id="1" class="route">1</div>
+                    <div id="2" class="route">2</div>
+                    <!-- <div id="3" class="route">3</div>
+                    <div id="4" class="route">4</div>
+                    <div id="5" class="route">5</div> -->
+
                 </div>
 
                 <!-- <label for="filters">Filter 1: </label>

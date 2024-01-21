@@ -25,11 +25,10 @@ function initMap() {
     var directionsRenderer = new google.maps.DirectionsRenderer();
     var directionsService = new google.maps.DirectionsService();
 
+    // Creates initial map
     directionsRenderer.setMap(map);
 
     document.getElementById('ride').addEventListener('click', async () => {
-        // start
-
         function geocodeAddress(address, callback) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
@@ -41,12 +40,18 @@ function initMap() {
                         lat: location.lat(),
                         lng: location.lng(),
                     });
+                    callback({
+                        address,
+                        lat: location.lat(),
+                        lng: location.lng(),
+                    });
                 } else {
                     console.log('error');
                 }
             });
         }
 
+        // Gets location values from user input
         var start = document.getElementById('start').value;
         var end = document.getElementById('end').value;
 
@@ -81,6 +86,18 @@ function initMap() {
                 // var waypoint1Lat = (midpointvectorLat - 0.2*(midpointvectorLat));
                 // var waypoint1Lng = (midpointvectorLng + 0.2*(midpointvectorLng));
 
+                const midpointvectorLat = (endLat + startLat) / 2;
+                const midpointvectorLng = (endLng + startLng) / 2;
+
+                var waypoint1Lat =
+                    midpointvectorLat + 0.2 * (endLat - startLat);
+                var waypoint1Lng =
+                    midpointvectorLng - 0.2 * (endLng - startLng);
+                var waypoint2Lat =
+                    midpointvectorLat - 0.2 * (endLat - startLat);
+                var waypoint2Lng =
+                    midpointvectorLng + 0.2 * (endLng - startLng);
+
                 console.log(waypoint1Lat);
                 console.log(waypoint1Lng);
                 console.log(waypoint1Lat);
@@ -88,8 +105,12 @@ function initMap() {
 
                 var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
                 var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
+                var waypoint1 = { lat: waypoint1Lat, lng: waypoint1Lng };
+                var waypoint2 = { lat: waypoint2Lat, lng: waypoint2Lng };
 
                 var safestElement = document.getElementById('safest');
+                var leastTrafficElement =
+                    document.getElementById('least-traffic');
                 var leastTrafficElement =
                     document.getElementById('least-traffic');
 
@@ -98,28 +119,76 @@ function initMap() {
                     { location: waypoint2, stopover: true },
                 ];
 
-                var routeses = [];
+                // Heat map points added
+                const heatmapData = [
+                    {
+                        lat: midpointvectorLat,
+                        lng: midpointvectorLng,
+                        intensity: 3,
+                    },
+
+                    // { lat: waypoint1.lat, lng: waypoint1.lng, intensity: 3 },
+                    // { lat: waypoint2.lat, lng: waypoint2.lng, intensity: 3 },
+                ];
+
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData.map(function (point) {
+                        return new google.maps.LatLng(point.lat, point.lng);
+                    }),
+                    map: map,
+                });
+
+                var results = [];
+                var legses = [];
                 function drawRoute(start, waypoint, end, button) {
                     var request = {
                         origin: start,
                         destination: end,
                         travelMode: 'BICYCLING',
+                        optimizeWaypoints: true,
                     };
 
-                    if (waypoint) [(request.waypoints = [waypoint])];
+                    if (waypoint) {
+                        request.waypoints = [waypoint];
+                    }
 
                     directionsService.route(request, function (result, status) {
                         if (status === 'OK') {
-                            // console.log(result);
-                            console.log(result.routes);
-                            routeses.push(result.routes);
-                            if (routeses.length === 3) {
+                            results.push(result);
+                            let bareLegs = [];
+                            for (leg of result.routes[0].legs) {
+                                const bareLeg = { steps: [] };
+                                for (step of leg.steps) {
+                                    const points = step.polyline.points;
+                                    bareLeg.steps.push(points);
+                                }
+                                bareLegs.push(bareLeg);
+                            }
+                            legses.push(bareLegs);
+                            if (results.length === 3) {
+                                console.log(legses);
+                                document
+                                    .querySelectorAll('.route')
+                                    .forEach(function (button) {
+                                        button.addEventListener(
+                                            'click',
+                                            (event) => {
+                                                directionsRenderer.setDirections(
+                                                    results[
+                                                        parseInt(
+                                                            event.target.id
+                                                        )
+                                                    ]
+                                                );
+                                            }
+                                        );
+                                    });
                                 fetch('/rides', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
                                     },
-                                    body: JSON.stringify(routeses),
+                                    body: JSON.stringify(legses),
                                 })
                                     .then((response) =>
                                         response.ok
@@ -141,40 +210,16 @@ function initMap() {
                     });
                 }
 
-                var results = [];
+                // var results = [];
                 drawRoute(start, null, end, null);
                 drawRoute(start, waypoints[0], end, safestElement);
                 drawRoute(start, waypoints[1], end, leastTrafficElement);
 
                 //
+                //
                 // { fastest: 1, safest: 2, least-traffic: 0 }
             });
         });
-
-        function drawRoute(start, end) {
-            var request = {
-                origin: start,
-                destination: end,
-                travelMode: 'BICYCLING',
-            };
-
-            directionsService.route(request, function (result, status) {
-                if (status == 'OK') {
-                    routes.push(result);
-                    directionsRenderer.setDirections(result);
-                } else {
-                    console.log('Error: ', status);
-                }
-            });
-        }
-
-        //get coordinates from input using geocoder for node express
-
-        // var start = document.getElementById('start').value;
-        // var end = document.getElementById('end').value;
-        // var start = '1535 rue St Jacques, Montreal, Canada';  // from textbox
-        // var end = '2125 rue Crescent, Montreal, Canada';  // from textbox
-        drawRoute(start, end);
     });
 
     const routeButtons = document.querySelectorAll('.route');
